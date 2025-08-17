@@ -1,0 +1,33 @@
+{
+  "name": "asterism-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node build/server.js",
+    "build": "tsup src --out-dir build",
+    "dev": "tsx src/server.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucas-adb/asterism-server.git"
+  },
+  "keywords": [],
+  "author": "Lucas Alves",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lucas-adb/asterism-server/issues"
+  },
+  "homepage": "https://github.com/lucas-adb/asterism-server#readme",
+  "description": "",
+  "dependencies": {
+    "fastify": "5.5.0",
+    "zod": "4.0.17"
+  },
+  "devDependencies": {
+    "@tsconfig/node22": "22.0.2",
+    "@types/node": "24.3.0",
+    "tsup": "8.5.0",
+    "tsx": "4.20.4",
+    "typescript": "5.9.2"
+  }
+}
