@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum FavoriteType {
+  SITES
+  INSPIRATIONS
+  ARTICLES
+  TUTORIALS
+  TOOLS
+}
+
+model User {
+  id            String   @id @default(uuid())
+  username      String
+  email         String   @unique
+  password_hash String
+  created_at    DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  favorites Favorite[]
+
+  @@map("users")
+}
+
+model Favorite {
+  id          String       @id @default(uuid())
+  title       String
+  description String
+  url         String
+  type        FavoriteType
+  created_at  DateTime     @default(now())
+  updated_at DateTime @updatedAt
+
+  user_id String
+  User    User   @relation(fields: [user_id], references: [id])
+
+  tags FavoriteTag[]
+
+  @@map("favorites")
+}
+
+model Tag {
+  id         String   @id @default(uuid())
+  name       String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  favorites FavoriteTag[]
+
+  @@map("tags")
+}
+
+model FavoriteTag {
+  favorite_id String
+  tag_id      String
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  favorite Favorite @relation(fields: [favorite_id], references: [id])
+  tag      Tag      @relation(fields: [tag_id], references: [id])
+
+  @@id([favorite_id, tag_id])
+  @@map("favorite_tags")
+}
