@@ -2,7 +2,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 import z from 'zod';
 import { makeCreateUserUseCase } from '@/factories/make-create-user-use-case';
 import { UserAlreadyExistsError } from '@/use-cases/errors/user-already-exists-error';
-import { HTTP_STATUS } from '@/utils/statusCode';
+import { HTTP_STATUS } from '@/utils/status-code';
 
 export async function create(request: FastifyRequest, reply: FastifyReply) {
   const passwordMinLength = 6;

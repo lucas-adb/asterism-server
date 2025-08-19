@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { app } from '@/app';
-import { HTTP_STATUS } from '@/utils/statusCode';
+import { HTTP_STATUS } from '@/utils/status-code';
 
 describe('Auth Org e2e', () => {
   beforeAll(async () => {

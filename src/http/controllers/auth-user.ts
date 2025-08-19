@@ -2,7 +2,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 import z from 'zod';
 import { makeAuthUserUseCase } from '@/factories/make-auth-user-user-case';
 import { InvalidCredentialsError } from '@/use-cases/errors/invalid-credentials-error';
-import { HTTP_STATUS } from '@/utils/statusCode';
+import { HTTP_STATUS } from '@/utils/status-code';
 
 export async function auth(request: FastifyRequest, reply: FastifyReply) {
   const bodySchema = z.object({
