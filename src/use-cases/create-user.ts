@@ -20,7 +20,7 @@ export class CreateUserUseCase {
     this.usersRepository = usersRepository;
   }
 
-  async create({
+  async execute({
     username,
     email,
     password,
