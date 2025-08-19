@@ -27,7 +27,7 @@ model User {
   email         String   @unique
   password_hash String
   created_at    DateTime @default(now())
-  updated_at DateTime @updatedAt
+  updated_at    DateTime @updatedAt
 
   favorites Favorite[]
 
@@ -41,7 +41,7 @@ model Favorite {
   url         String
   type        FavoriteType
   created_at  DateTime     @default(now())
-  updated_at DateTime @updatedAt
+  updated_at  DateTime     @updatedAt
 
   user_id String
   User    User   @relation(fields: [user_id], references: [id])
