@@ -24,7 +24,8 @@ export default (<Environment>{
 
     process.env.DATABASE_URL = databaseUrl;
 
-    await execSync('npx prisma migrate deploy');
+    // Use db push instead of migrate deploy to avoid enum conflicts
+    await execSync('npx prisma db push', { stdio: 'inherit' });
 
     return {
       async teardown() {
