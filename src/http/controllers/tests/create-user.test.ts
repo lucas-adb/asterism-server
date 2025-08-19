@@ -1,6 +1,6 @@
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
-import { app } from '@/app.js';
+import { app } from '@/app';
 
 describe('Create User e2e', () => {
   beforeAll(async () => {

@@ -2,7 +2,7 @@ import 'dotenv/config';
 import { execSync } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 import type { Environment } from 'vitest/environments';
-import { prisma } from '@/lib/prisma.js';
+import { prisma } from '@/lib/prisma';
 
 function generateDatabaseUrl(schema: string) {
   if (!process.env.DATABASE_URL) {

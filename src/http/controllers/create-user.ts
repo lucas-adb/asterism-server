@@ -2,6 +2,7 @@ import type { FastifyReply, FastifyRequest } from 'fastify';
 import z from 'zod';
 import { makeCreateUserUseCase } from '@/factories/make-create-user-use-case';
 import { UserAlreadyExistsError } from '@/use-cases/errors/user-already-exists-error';
+import { HTTP_STATUS } from '@/utils/statusCode';
 
 export async function create(request: FastifyRequest, reply: FastifyReply) {
   const passwordMinLength = 6;
@@ -24,9 +25,7 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
     });
   } catch (error) {
     if (error instanceof UserAlreadyExistsError) {
-      const statusCodeConflict = 409;
-
-      return reply.status(statusCodeConflict).send({
+      return reply.status(HTTP_STATUS.CONFLICT).send({
         message: error.message,
       });
     }
@@ -34,6 +33,5 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
     throw error;
   }
 
-  const statusCodeCreated = 201;
-  reply.status(statusCodeCreated).send();
+  reply.status(HTTP_STATUS.CREATED).send();
 }
