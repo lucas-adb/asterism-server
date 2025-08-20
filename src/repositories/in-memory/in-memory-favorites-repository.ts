@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { Favorite, Prisma } from '@prisma/client';
+import type { Favorite, FavoriteTag, Prisma } from '@prisma/client';
 import type { FavoritesRepository } from '../favorites-repository';
 
 export class InMemoryFavoritesRepository implements FavoritesRepository {

@@ -39,10 +39,13 @@ export class ManageTagsUseCase {
   }
 
   private normalizeTagNames(tagNames: string[]): string[] {
-    return tagNames
-      .map((name) => name.trim().toLowerCase())
-      .filter((name) => name.length > 0)
-      .filter((name, index, arr) => arr.indexOf(name) === index);
+    return [
+      ...new Set(
+        tagNames
+          .map((name) => name.trim().toLowerCase())
+          .filter((name) => name.length > 0)
+      ),
+    ];
   }
 
   private async createNewTags(tagNames: string[]): Promise<Tag[]> {
