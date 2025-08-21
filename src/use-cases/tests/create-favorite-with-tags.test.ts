@@ -5,6 +5,7 @@ import { InMemoryTagsRepository } from '@/repositories/in-memory/in-memory-tags-
 import { InMemoryFavoritesRepository } from '../../repositories/in-memory/in-memory-favorites-repository';
 import { InMemoryUsersRepository } from '../../repositories/in-memory/in-memory-users-repository';
 import { CreateFavoriteWithTagsUseCase } from '../create-favorite-with-tags';
+import { ResourceNotFoundError } from '../errors/resource-not-found-error';
 import { ManageTagsUseCase } from '../manage-tags';
 import { makeFavorite } from './factories/make-favorite';
 import { makeTagName } from './factories/make-tag';
@@ -70,5 +71,96 @@ describe('Create Favorite With Tags', () => {
     expect(result.tags).toHaveLength(tagsArrayLength);
     expect(tagsRepository.getItemsCount()).toBe(tagsArrayLength);
     expect(favoriteTagsRepository.getCount()).toBe(tagsArrayLength);
+  });
+
+  it('should create favorite without tags when tags array is empty', async () => {
+    const user = await makeUser(usersRepository);
+
+    const favoriteData = makeFavorite({
+      user_id: user.id,
+    });
+
+    const favoriteWithTagsData = {
+      ...favoriteData,
+      tags: [],
+    };
+
+    expect(tagsRepository.getItemsCount()).toBe(0);
+    expect(favoriteTagsRepository.getCount()).toBe(0);
+
+    const result = await sut.execute(favoriteWithTagsData);
+
+    expect(result.favorite).toEqual(
+      expect.objectContaining({ id: expect.any(String) })
+    );
+
+    expect(result.tags).toHaveLength(0);
+    expect(tagsRepository.getItemsCount()).toBe(0);
+    expect(favoriteTagsRepository.getCount()).toBe(0);
+  });
+
+  it('should throw ResourceNotFoundError when user does not exist', async () => {
+    await makeUser(usersRepository);
+
+    const favoriteData = makeFavorite({
+      user_id: 'faker-user',
+    });
+
+    const favoriteWithTagsData = {
+      ...favoriteData,
+      tags: [],
+    };
+
+    await expect(async () => {
+      return await sut.execute(favoriteWithTagsData);
+    }).rejects.toBeInstanceOf(ResourceNotFoundError);
+  });
+
+  it('should create favorite with mix of existing and new tags', async () => {
+    const user = await makeUser(usersRepository);
+    await tagsRepository.create({ name: 'react' });
+    await tagsRepository.create({ name: 'javascript' });
+    const tagsArray = ['react', 'javascript', 'frontend', 'typescript'];
+
+    expect(tagsRepository.getItemsCount()).toBe(2);
+
+    const favoriteWithTagsData = {
+      ...makeFavorite({ user_id: user.id }),
+      tags: tagsArray,
+    };
+
+    const result = await sut.execute(favoriteWithTagsData);
+
+    expect(result.favorite).toEqual(
+      expect.objectContaining({ id: expect.any(String) })
+    );
+
+    expect(result.tags).toHaveLength(tagsArray.length);
+    expect(tagsRepository.getItemsCount()).toBe(tagsArray.length);
+    expect(favoriteTagsRepository.getCount()).toBe(tagsArray.length);
+  });
+
+  it('should create favorite with existing tags only', async () => {
+    const user = await makeUser(usersRepository);
+    await tagsRepository.create({ name: 'react' });
+    await tagsRepository.create({ name: 'javascript' });
+    const tagsArray = ['react', 'javascript'];
+
+    expect(tagsRepository.getItemsCount()).toBe(2);
+
+    const favoriteWithTagsData = {
+      ...makeFavorite({ user_id: user.id }),
+      tags: tagsArray,
+    };
+
+    const result = await sut.execute(favoriteWithTagsData);
+
+    expect(result.favorite).toEqual(
+      expect.objectContaining({ id: expect.any(String) })
+    );
+
+    expect(result.tags).toHaveLength(tagsArray.length);
+    expect(tagsRepository.getItemsCount()).toBe(tagsArray.length);
+    expect(favoriteTagsRepository.getCount()).toBe(tagsArray.length);
   });
 });
