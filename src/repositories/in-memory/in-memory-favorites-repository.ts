@@ -23,4 +23,10 @@ export class InMemoryFavoritesRepository implements FavoritesRepository {
 
     return favorite;
   }
+
+  findByIdWithTags(
+    id: string
+  ): Promise<(Favorite & { tags: FavoriteTag[] }) | null> {
+    throw new Error('Method not implemented.');
+  }
 }
