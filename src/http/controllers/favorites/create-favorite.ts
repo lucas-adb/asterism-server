@@ -21,7 +21,7 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
 
   const useCase = makeCreateFavoriteWithTagsUseCase();
 
-  await useCase.execute({
+  const favorite = await useCase.execute({
     title,
     description,
     url,
@@ -30,5 +30,5 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
     user_id: request.user.sub,
   });
 
-  reply.status(HTTP_STATUS.CREATED).send();
+  reply.status(HTTP_STATUS.CREATED).send(favorite);
 }
