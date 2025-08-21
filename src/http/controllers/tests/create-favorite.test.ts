@@ -1,6 +1,7 @@
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { app } from '@/app';
+import { makeFavorite } from '@/use-cases/tests/factories/make-favorite';
 import { HTTP_STATUS } from '@/utils/status-code';
 import { getAuthToken } from './helpers/auth-helper';
 
@@ -43,5 +44,14 @@ describe('Create Favorite e2e', () => {
         expect.objectContaining({ name: 'frontend' }),
       ]),
     });
+  });
+
+  test('should fail without authentication', async () => {
+    const favoriteData = makeFavorite();
+    const response = await request(app.server)
+      .post('/favorite')
+      .send(favoriteData);
+
+    expect(response.statusCode).toBe(HTTP_STATUS.UNAUTHORIZED);
   });
 });
