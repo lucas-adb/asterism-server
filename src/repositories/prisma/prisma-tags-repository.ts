@@ -1,17 +1,33 @@
 import type { Prisma, Tag } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import type { TagsRepository } from '../tags-repository';
 
 export class PrismaTagsRepository implements TagsRepository {
-  findByName(name: string): Promise<Tag | null> {
-    throw new Error('Method not implemented.');
+  async findByName(name: string): Promise<Tag | null> {
+    const tag = await prisma.tag.findFirst({ where: { name } });
+
+    return tag;
   }
-  findManyByNames(names: string[]): Promise<Tag[]> {
-    throw new Error('Method not implemented.');
+
+  async findManyByNames(names: string[]): Promise<Tag[]> {
+    const tags = await prisma.tag.findMany({
+      where: {
+        name: { in: names },
+      },
+    });
+
+    return tags;
   }
-  create(data: Prisma.TagCreateInput): Promise<Tag> {
-    throw new Error('Method not implemented.');
+
+  async create(data: Prisma.TagCreateInput): Promise<Tag> {
+    const tag = await prisma.tag.create({ data });
+
+    return tag;
   }
-  createMany(data: Prisma.TagCreateManyInput[]): Promise<Tag[]> {
-    throw new Error('Method not implemented.');
+
+  async createMany(data: Prisma.TagCreateManyInput[]): Promise<Tag[]> {
+    const tags = await prisma.tag.createManyAndReturn({ data });
+
+    return tags;
   }
 }
