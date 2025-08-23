@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import { InMemoryFavoritesRepository } from '../../repositories/in-memory/in-memory-favorites-repository';
 import { InMemoryUsersRepository } from '../../repositories/in-memory/in-memory-users-repository';
 import { DeleteFavoriteUseCase } from '../delete-favorite-use-case';
+import { UserUnauthorized } from '../errors/user-unauthorized-error';
 
 let usersRepository: InMemoryUsersRepository;
 let repository: InMemoryFavoritesRepository;
@@ -42,5 +43,30 @@ describe('Delete Favorite', () => {
 
     expect(repository.getItemsCount()).toBe(0);
     expect(repository.getFavoriteTags(favorite.id)).toHaveLength(0);
+  });
+
+  it('should throw UserUnauthorized when favorite belongs to another user', async () => {
+    const userData = {
+      username: 'Testing Joe',
+      email: 'test@mail.com',
+      password_hash: '123456',
+    };
+
+    const user = await usersRepository.create(userData);
+
+    const favoriteData = {
+      title: 'Test Title',
+      description: 'Test Description',
+      url: 'https://aeon.co/',
+      type: FavoriteType.SITES,
+      user_id: 'other-user',
+    };
+
+    const favorite = await repository.create(favoriteData);
+    await repository.addTagToFavorite(favorite.id, 'tag1');
+
+    await expect(async () => {
+      return await sut.execute({ favorite_id: favorite.id, user_id: user.id });
+    }).rejects.toBeInstanceOf(UserUnauthorized);
   });
 });
