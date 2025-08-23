@@ -17,4 +17,9 @@ export type FavoritesRepository = {
   countByUserId(user_id: string, filters?: QueryOptions): Promise<number>;
 
   delete(id: string): Promise<void>;
+
+  update(
+    id: string,
+    data: Prisma.FavoriteUncheckedCreateInput
+  ): Promise<Favorite>;
 };

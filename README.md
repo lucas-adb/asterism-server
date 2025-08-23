@@ -5,6 +5,6 @@ Bookmark Manager API.
 # Checklist
 
 - [x] `GetUserFavoritesUseCase` pagination + tags
-- [ ] `GetFavoriteByIdUseCase` + tags
+- [x] `GetFavoriteByIdUseCase` + tags
 - [ ] `UpdateFavoriteUseCase` + tags
 - [x] `DeleteFavoriteUseCase`
