@@ -1,4 +1,4 @@
-import type { Favorite, FavoriteTag, Prisma } from '@prisma/client';
+import type { Favorite, Prisma } from '@prisma/client';
 import type { FavoriteWithTags } from '@/@types/favorite-types';
 import type { PaginationInput } from '@/@types/pagination-types';
 import type { QueryOptions } from '@/@types/query-types';
@@ -6,9 +6,7 @@ import type { QueryOptions } from '@/@types/query-types';
 export type FavoritesRepository = {
   create(data: Prisma.FavoriteUncheckedCreateInput): Promise<Favorite>;
 
-  findByIdWithTags(
-    id: string
-  ): Promise<(Favorite & { tags: FavoriteTag[] }) | null>;
+  findByIdWithTags(id: string): Promise<FavoriteWithTags | null>;
 
   findManyByUserId(
     user_id: string,

@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { Favorite, FavoriteTag, Prisma } from '@prisma/client';
+import type { Favorite, Prisma } from '@prisma/client';
 import type { FavoriteWithTags } from '@/@types/favorite-types';
 import type { PaginationInput } from '@/@types/pagination-types';
 import type { QueryOptions } from '@/@types/query-types';
@@ -41,9 +41,7 @@ export class InMemoryFavoritesRepository implements FavoritesRepository {
     return Promise.resolve(favorite);
   }
 
-  findByIdWithTags(
-    id: string
-  ): Promise<(Favorite & { tags: FavoriteTag[] }) | null> {
+  findByIdWithTags(id: string): Promise<FavoriteWithTags | null> {
     const favorite = this.items.find((item) => item.id === id);
 
     if (!favorite) {
@@ -53,12 +51,7 @@ export class InMemoryFavoritesRepository implements FavoritesRepository {
     const tags = this.getFavoriteTags(favorite.id);
     const result = {
       ...favorite,
-      tags: tags.map((tag) => ({
-        favorite_id: favorite.id,
-        tag_id: tag.id,
-        created_at: tag.created_at,
-        updated_at: tag.updated_at,
-      })),
+      tags,
     };
 
     return Promise.resolve(result);

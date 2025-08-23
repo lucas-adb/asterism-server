@@ -1,4 +1,4 @@
-import type { Favorite, FavoriteTag, Prisma } from '@prisma/client';
+import type { Favorite, Prisma } from '@prisma/client';
 import type { FavoriteWithTags } from '@/@types/favorite-types';
 import type { PaginationInput } from '@/@types/pagination-types';
 import type { QueryOptions } from '@/@types/query-types';
@@ -20,13 +20,15 @@ export class PrismaFavoritesRepository implements FavoritesRepository {
     return favorite;
   }
 
-  async findByIdWithTags(
-    id: string
-  ): Promise<(Favorite & { tags: FavoriteTag[] }) | null> {
+  async findByIdWithTags(id: string): Promise<FavoriteWithTags | null> {
     const favorite = await prisma.favorite.findUnique({
       where: { id },
       include: {
-        tags: true,
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
       },
     });
 
@@ -34,7 +36,11 @@ export class PrismaFavoritesRepository implements FavoritesRepository {
       return null;
     }
 
-    return favorite;
+    // Transform to expected format
+    return {
+      ...favorite,
+      tags: favorite.tags.map((ft) => ft.tag),
+    };
   }
 
   async findManyByUserId(
