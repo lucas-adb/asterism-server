@@ -2,6 +2,7 @@ import type { FavoriteWithTags } from '@/@types/favorite-types';
 import type { FavoritesRepository } from '@/repositories/favorites-repository';
 import type { UsersRepository } from '@/repositories/users-repository';
 import { ResourceNotFoundError } from './errors/resource-not-found-error';
+import { UserUnauthorized } from './errors/user-unauthorized-error';
 
 type GetUserFavoriteByIdUseCaseRequest = {
   user_id: string;
@@ -39,6 +40,10 @@ export class GetUserFavoriteByIdUseCase {
 
     if (!favorite) {
       throw new ResourceNotFoundError();
+    }
+
+    if (favorite.user_id !== user_id) {
+      throw new UserUnauthorized();
     }
 
     return { favorite };
