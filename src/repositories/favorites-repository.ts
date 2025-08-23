@@ -17,4 +17,6 @@ export type FavoritesRepository = {
   ): Promise<FavoriteWithTags[]>;
 
   countByUserId(user_id: string, filters?: QueryOptions): Promise<number>;
+
+  delete(id: string): Promise<void>;
 };
