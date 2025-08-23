@@ -18,4 +18,8 @@ export class PrismaFavoriteTagsRepository implements FavoriteTagsRepository {
 
     return favoriteTags;
   }
+
+  async deleteByFavoriteId(favoriteId: string): Promise<void> {
+    await prisma.favoriteTag.deleteMany({ where: { favorite_id: favoriteId } });
+  }
 }

@@ -1,7 +1,6 @@
 import request from 'supertest';
 import { afterAll, beforeAll, describe, expect, test } from 'vitest';
 import { app } from '@/app';
-import { makeFavorite } from '@/use-cases/tests/factories/make-favorite';
 import { HTTP_STATUS } from '@/utils/status-code';
 import { getAuthToken } from './helpers/auth-helper';
 
@@ -14,7 +13,7 @@ describe('Create Favorite e2e', () => {
     await app.close();
   });
 
-  test('should create favorite with tags', async () => {
+  test('should update favorite with new data and tags', async () => {
     const token = await getAuthToken();
 
     const favoriteData = {
@@ -25,32 +24,35 @@ describe('Create Favorite e2e', () => {
       tags: ['react', 'javascript', 'frontend'],
     };
 
-    const response = await request(app.server)
+    const CreateResponse = await request(app.server)
       .post('/favorite')
       .set('Authorization', `Bearer ${token}`)
       .send(favoriteData);
 
-    expect(response.statusCode).toBe(HTTP_STATUS.CREATED);
+    const newFavoriteData = {
+      title: 'Vue Guide',
+      description: 'Learning Vue',
+      url: 'https://vue.example.com',
+      type: 'TUTORIALS',
+      tags: ['vue', 'typescript'],
+    };
 
-    expect(response.body).toEqual({
+    const updateResponse = await request(app.server)
+      .put(`/favorite/${CreateResponse.body.favorite.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(newFavoriteData);
+
+    expect(updateResponse.statusCode).toBe(HTTP_STATUS.OK);
+
+    expect(updateResponse.body).toEqual({
       favorite: expect.objectContaining({
         id: expect.any(String),
-        title: 'React Documentation',
+        title: 'Vue Guide',
       }),
       tags: expect.arrayContaining([
-        expect.objectContaining({ name: 'react' }),
-        expect.objectContaining({ name: 'javascript' }),
-        expect.objectContaining({ name: 'frontend' }),
+        expect.objectContaining({ name: 'vue' }),
+        expect.objectContaining({ name: 'typescript' }),
       ]),
     });
-  });
-
-  test('should fail without authentication', async () => {
-    const favoriteData = makeFavorite();
-    const response = await request(app.server)
-      .post('/favorite')
-      .send(favoriteData);
-
-    expect(response.statusCode).toBe(HTTP_STATUS.UNAUTHORIZED);
   });
 });
