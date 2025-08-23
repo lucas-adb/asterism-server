@@ -69,8 +69,8 @@ model FavoriteTag {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
-  favorite Favorite @relation(fields: [favorite_id], references: [id])
-  tag      Tag      @relation(fields: [tag_id], references: [id])
+  favorite Favorite @relation(fields: [favorite_id], references: [id], onDelete: Cascade)
+  tag      Tag      @relation(fields: [tag_id], references: [id], onDelete: Cascade)
 
   @@id([favorite_id, tag_id])
   @@map("favorite_tags")

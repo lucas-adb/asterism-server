@@ -13,6 +13,24 @@ export class InMemoryFavoritesRepository implements FavoritesRepository {
     tag: { id: string; name: string; created_at: Date; updated_at: Date };
   }> = [];
 
+  async delete(id: string) {
+    const favorite = this.items.find((item) => item.id === id);
+
+    if (!favorite) {
+      return;
+    }
+
+    const filteredItems = await this.items.filter(
+      (item) => item.id !== favorite.id
+    );
+    const filteredTags = await this.favoriteTags.filter(
+      (item) => item.favorite_id !== favorite.id
+    );
+
+    this.items = filteredItems;
+    this.favoriteTags = filteredTags;
+  }
+
   create(data: Prisma.FavoriteUncheckedCreateInput): Promise<Favorite> {
     const now = new Date();
 

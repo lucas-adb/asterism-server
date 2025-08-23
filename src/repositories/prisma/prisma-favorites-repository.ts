@@ -6,6 +6,12 @@ import { prisma } from '@/lib/prisma';
 import type { FavoritesRepository } from '../favorites-repository';
 
 export class PrismaFavoritesRepository implements FavoritesRepository {
+  async delete(id: string): Promise<void> {
+    await prisma.favorite.delete({
+      where: { id },
+    });
+  }
+
   async create(data: Prisma.FavoriteUncheckedCreateInput): Promise<Favorite> {
     const favorite = await prisma.favorite.create({
       data,
