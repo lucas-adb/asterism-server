@@ -20,6 +20,23 @@ export class PrismaFavoritesRepository implements FavoritesRepository {
     return favorite;
   }
 
+  async update(
+    id: string,
+    data: Prisma.FavoriteUncheckedCreateInput
+  ): Promise<Favorite | null> {
+    const favorite = await prisma.favorite.update({
+      where: { id },
+      data: {
+        title: data.title,
+        description: data.description,
+        url: data.url,
+        type: data.type,
+      },
+    });
+
+    return favorite;
+  }
+
   async findByIdWithTags(id: string): Promise<FavoriteWithTags | null> {
     const favorite = await prisma.favorite.findUnique({
       where: { id },

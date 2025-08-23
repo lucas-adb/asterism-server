@@ -41,6 +41,32 @@ export class InMemoryFavoritesRepository implements FavoritesRepository {
     return Promise.resolve(favorite);
   }
 
+  update(
+    id: string,
+    data: Prisma.FavoriteUncheckedCreateInput
+  ): Promise<Favorite | null> {
+    const favoriteIndex = this.items.findIndex((item) => item.id === id);
+
+    if (favoriteIndex < 0) {
+      return Promise.resolve(null);
+    }
+
+    const currentFavorite = this.items[favoriteIndex];
+
+    const updatedFavorite: Favorite = {
+      ...currentFavorite,
+      title: data.title,
+      description: data.description,
+      url: data.url,
+      type: data.type,
+      updated_at: new Date(),
+    };
+
+    this.items[favoriteIndex] = updatedFavorite;
+
+    return Promise.resolve(updatedFavorite);
+  }
+
   findByIdWithTags(id: string): Promise<FavoriteWithTags | null> {
     const favorite = this.items.find((item) => item.id === id);
 
