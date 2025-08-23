@@ -28,6 +28,18 @@ type GetUserFavoritesUseCaseResponse = {
   pagination: PaginationOutput;
 };
 
+type ValidatedParams = {
+  page: number;
+  limit: number;
+  sortOrder: SortOrder;
+};
+
+type PaginationMetadata = {
+  totalPages: number;
+  hasNextPage: boolean;
+  hasPrevPage: boolean;
+};
+
 export class GetUserFavoritesUseCase {
   private readonly favoritesRepository: FavoritesRepository;
   private readonly usersRepository: UsersRepository;
@@ -38,6 +50,55 @@ export class GetUserFavoritesUseCase {
   ) {
     this.favoritesRepository = favoritesRepository;
     this.usersRepository = usersRepository;
+  }
+
+  private validateAndApplyDefaults(
+    page?: number,
+    limit?: number,
+    sortOrder?: SortOrder
+  ): ValidatedParams {
+    const validatedPage = Math.max(page ?? DEFAULT_PAGE, 1);
+    const validatedLimit = Math.min(
+      Math.max(limit ?? DEFAULT_LIMIT, 1),
+      MAX_LIMIT
+    );
+    const validatedSortOrder: SortOrder = sortOrder ?? 'desc';
+
+    return {
+      page: validatedPage,
+      limit: validatedLimit,
+      sortOrder: validatedSortOrder,
+    };
+  }
+
+  private buildFilters(
+    type?: string,
+    tags?: string[],
+    query?: string,
+    sortOrder?: SortOrder
+  ): QueryOptions {
+    return {
+      type: type as FavoriteType | undefined,
+      tags: tags?.length ? tags : undefined,
+      query: query?.trim() || undefined,
+      sortOrder,
+    };
+  }
+
+  private calculatePaginationMetadata(
+    total: number,
+    page: number,
+    limit: number
+  ): PaginationMetadata {
+    const totalPages = Math.ceil(total / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+
+    return {
+      totalPages,
+      hasNextPage,
+      hasPrevPage,
+    };
   }
 
   async execute({
@@ -55,39 +116,42 @@ export class GetUserFavoritesUseCase {
       throw new ResourceNotFoundError();
     }
 
-    // defaults:
-    const validatedPage = Math.max(page || DEFAULT_PAGE, 1);
-
-    const validatedLimit = Math.min(
-      Math.max(limit || DEFAULT_LIMIT, 1),
-      MAX_LIMIT
+    // Apply defaults and validate parameters
+    const validatedParams = this.validateAndApplyDefaults(
+      page,
+      limit,
+      sortOrder
     );
 
-    const validatedSortOrder: SortOrder = sortOrder || 'desc';
+    // Build filters for query
+    const filters = this.buildFilters(
+      type,
+      tags,
+      query,
+      validatedParams.sortOrder
+    );
 
-    const filters: QueryOptions = {
-      type: type || undefined,
-      tags: tags && tags.length > 0 ? tags : undefined,
-      query: query?.trim() ? query.trim() : undefined,
-      sortOrder: validatedSortOrder,
-    };
-
+    // Get total count with filters applied
     const total = await this.favoritesRepository.countByUserId(
       user_id,
       filters
     );
 
-    const totalPages = Math.ceil(total / validatedLimit);
-    const hasNextPage = validatedPage < totalPages;
-    const hasPrevPage = validatedPage > 1;
+    // Calculate pagination metadata
+    const paginationMetadata = this.calculatePaginationMetadata(
+      total,
+      validatedParams.page,
+      validatedParams.limit
+    );
 
+    // Fetch favorites if there are any
     const favorites =
       total > 0
         ? await this.favoritesRepository.findManyByUserId(
             user_id,
             {
-              page: validatedPage,
-              limit: validatedLimit,
+              page: validatedParams.page,
+              limit: validatedParams.limit,
             },
             filters
           )
@@ -96,12 +160,12 @@ export class GetUserFavoritesUseCase {
     return {
       favorites,
       pagination: {
-        page: validatedPage,
-        limit: validatedLimit,
+        page: validatedParams.page,
+        limit: validatedParams.limit,
         total,
-        totalPages,
-        hasNextPage,
-        hasPrevPage,
+        totalPages: paginationMetadata.totalPages,
+        hasNextPage: paginationMetadata.hasNextPage,
+        hasPrevPage: paginationMetadata.hasPrevPage,
       },
     };
   }
