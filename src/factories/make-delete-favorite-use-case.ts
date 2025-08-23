@@ -2,7 +2,7 @@ import { PrismaFavoritesRepository } from '@/repositories/prisma/prisma-favorite
 import { PrismaUsersRepository } from '@/repositories/prisma/prisma-users-repository';
 import { DeleteFavoriteUseCase } from '@/use-cases/delete-favorite-use-case';
 
-export function makeDeleteFavoriteFavoritesUseCase() {
+export function makeDeleteFavoriteUseCase() {
   const favoritesRepository = new PrismaFavoritesRepository();
   const usersRepository = new PrismaUsersRepository();
   const useCase = new DeleteFavoriteUseCase(
