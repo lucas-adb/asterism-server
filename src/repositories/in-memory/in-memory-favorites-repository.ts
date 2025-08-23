@@ -13,22 +13,13 @@ export class InMemoryFavoritesRepository implements FavoritesRepository {
     tag: { id: string; name: string; created_at: Date; updated_at: Date };
   }> = [];
 
-  async delete(id: string) {
-    const favorite = this.items.find((item) => item.id === id);
-
-    if (!favorite) {
-      return;
-    }
-
-    const filteredItems = await this.items.filter(
-      (item) => item.id !== favorite.id
-    );
-    const filteredTags = await this.favoriteTags.filter(
-      (item) => item.favorite_id !== favorite.id
+  delete(id: string): Promise<void> {
+    this.items = this.items.filter((item) => item.id !== id);
+    this.favoriteTags = this.favoriteTags.filter(
+      (item) => item.favorite_id !== id
     );
 
-    this.items = filteredItems;
-    this.favoriteTags = filteredTags;
+    return Promise.resolve();
   }
 
   create(data: Prisma.FavoriteUncheckedCreateInput): Promise<Favorite> {
@@ -136,7 +127,7 @@ export class InMemoryFavoritesRepository implements FavoritesRepository {
 
   // HELPERS
 
-  private getFavoriteTags(favoriteId: string) {
+  getFavoriteTags(favoriteId: string) {
     return this.favoriteTags
       .filter((ft) => ft.favorite_id === favoriteId)
       .map((ft) => ft.tag);
@@ -161,5 +152,9 @@ export class InMemoryFavoritesRepository implements FavoritesRepository {
   clear() {
     this.items = [];
     this.favoriteTags = [];
+  }
+
+  getItemsCount() {
+    return this.items.length;
   }
 }
