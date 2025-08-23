@@ -3,6 +3,7 @@ import type { Favorite, Prisma } from '@prisma/client';
 import type { FavoriteWithTags } from '@/@types/favorite-types';
 import type { PaginationInput } from '@/@types/pagination-types';
 import type { QueryOptions } from '@/@types/query-types';
+import { ResourceNotFoundError } from '@/use-cases/errors/resource-not-found-error';
 import type { FavoritesRepository } from '../favorites-repository';
 
 export class InMemoryFavoritesRepository implements FavoritesRepository {
@@ -44,11 +45,12 @@ export class InMemoryFavoritesRepository implements FavoritesRepository {
   update(
     id: string,
     data: Prisma.FavoriteUncheckedCreateInput
-  ): Promise<Favorite | null> {
+  ): Promise<Favorite> {
     const favoriteIndex = this.items.findIndex((item) => item.id === id);
 
     if (favoriteIndex < 0) {
-      return Promise.resolve(null);
+      // return Promise.resolve(null);
+      throw new ResourceNotFoundError();
     }
 
     const currentFavorite = this.items[favoriteIndex];

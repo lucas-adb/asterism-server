@@ -21,5 +21,5 @@ export type FavoritesRepository = {
   update(
     id: string,
     data: Prisma.FavoriteUncheckedCreateInput
-  ): Promise<Favorite | null>;
+  ): Promise<Favorite>;
 };

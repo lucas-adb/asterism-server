@@ -27,6 +27,11 @@ export class InMemoryFavoriteTagsRepository implements FavoriteTagsRepository {
     return favoriteTags;
   }
 
+  deleteByFavoriteId(favoriteId: string): Promise<void> {
+    this.items = this.items.filter((item) => item.favorite_id !== favoriteId);
+    return Promise.resolve();
+  }
+
   // test helpers:
   getCount() {
     return this.items.length;

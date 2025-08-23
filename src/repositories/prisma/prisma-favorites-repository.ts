@@ -1,5 +1,4 @@
 import type { Favorite, Prisma } from '@prisma/client';
-import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import type { FavoriteWithTags } from '@/@types/favorite-types';
 import type { PaginationInput } from '@/@types/pagination-types';
 import type { QueryOptions } from '@/@types/query-types';
@@ -24,27 +23,18 @@ export class PrismaFavoritesRepository implements FavoritesRepository {
   async update(
     id: string,
     data: Prisma.FavoriteUncheckedCreateInput
-  ): Promise<Favorite | null> {
-    try {
-      const favorite = await prisma.favorite.update({
-        where: { id },
-        data: {
-          title: data.title,
-          description: data.description,
-          url: data.url,
-          type: data.type,
-        },
-      });
-      return favorite;
-    } catch (error) {
-      if (
-        error instanceof PrismaClientKnownRequestError &&
-        error.code === 'P2025'
-      ) {
-        return null;
-      }
-      throw error;
-    }
+  ): Promise<Favorite> {
+    const favorite = await prisma.favorite.update({
+      where: { id },
+      data: {
+        title: data.title,
+        description: data.description,
+        url: data.url,
+        type: data.type,
+      },
+    });
+
+    return favorite;
   }
 
   async findByIdWithTags(id: string): Promise<FavoriteWithTags | null> {
