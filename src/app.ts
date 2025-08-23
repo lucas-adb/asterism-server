@@ -5,6 +5,8 @@ import z, { ZodError } from 'zod';
 import { env } from './env';
 import { favoriteRoutes } from './http/controllers/favorites/favorite-routes';
 import { usersRoutes } from './http/controllers/users/users-routes';
+import { ResourceNotFoundError } from './use-cases/errors/resource-not-found-error';
+import { UserUnauthorized } from './use-cases/errors/user-unauthorized-error';
 import { HTTP_STATUS } from './utils/status-code';
 
 export const app = fastify();
@@ -30,6 +32,18 @@ app.setErrorHandler((error, _request, reply) => {
       message: 'Validation error',
       issues: pretty,
     });
+  }
+
+  if (error instanceof ResourceNotFoundError) {
+    return reply
+      .status(HTTP_STATUS.NOT_FOUND)
+      .send({ message: 'Resource not found' });
+  }
+
+  if (error instanceof UserUnauthorized) {
+    return reply
+      .status(HTTP_STATUS.FORBIDDEN)
+      .send({ message: 'Access denied' });
   }
 
   if (env.NODE_ENV !== 'production') {
