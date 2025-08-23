@@ -7,4 +7,4 @@ Bookmark Manager API.
 - [x] `GetUserFavoritesUseCase` pagination + tags
 - [ ] `GetFavoriteByIdUseCase` + tags
 - [ ] `UpdateFavoriteUseCase` + tags
-- [ ] `DeleteFavoriteUseCase`
+- [x] `DeleteFavoriteUseCase`
