@@ -1,4 +1,5 @@
 import fastifyCookie from '@fastify/cookie';
+import fastifyCors from '@fastify/cors';
 import fastifyJwt from '@fastify/jwt';
 import fastify from 'fastify';
 import z, { ZodError } from 'zod';
@@ -20,6 +21,11 @@ app.register(fastifyJwt, {
   sign: {
     expiresIn: '10m',
   },
+});
+
+app.register(fastifyCors, {
+  origin: env.FRONTEND_URL, // front address
+  credentials: true, // if you use cookies
 });
 
 app.register(fastifyCookie);
