@@ -25,6 +25,7 @@ app.register(fastifyJwt, {
 
 app.register(fastifyCors, {
   origin: env.FRONTEND_URL, // front address
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true, // if you use cookies
 });
 
