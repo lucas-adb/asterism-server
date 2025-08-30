@@ -31,7 +31,14 @@ export async function auth(request: FastifyRequest, reply: FastifyReply) {
         httpOnly: true,
       })
       .status(HTTP_STATUS.OK)
-      .send({ token });
+      .send({
+        token,
+        user: {
+          id: user.id,
+          username: user.username,
+          email: user.email,
+        },
+      });
   } catch (error) {
     if (error instanceof InvalidCredentialsError) {
       return reply.status(HTTP_STATUS.BAD_REQUEST).send({
