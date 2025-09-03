@@ -7,7 +7,8 @@
     "build": "tsup src --out-dir build",
     "dev": "tsx src/server.ts",
     "test": "vitest --project unit",
-    "test:e2e": "vitest --project e2e"
+    "test:e2e": "vitest --project e2e",
+    "migrate": "npx prisma migrate deploy"
   },
   "repository": {
     "type": "git",
